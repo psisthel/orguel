@@ -1,5 +1,13 @@
 #include "PROTHEUS.CH"
 
+/*
+Programa    : STHORG01
+Descricao   : Generar Pedido de venda 
+Cliente     : ORGUEL
+Author      : Percy Arias
+Data        : 6/10/2021
+*/
+
 User Function STHORG01
 
 	Local _aArea	:= getArea()
