@@ -1,6 +1,14 @@
 #include "PROTHEUS.CH"
 #INCLUDE "TBICONN.CH"
 
+/*
+Programa    : STHORG03
+Descricao   : Gera indenizacao previamente cadastrada como custo extra
+Cliente     : ORGUEL
+Author      : Percy Arias
+Data        : 6/10/2021
+*/
+
 User Function STHORG03
 
 	local clTitulo	:= "Gerar Indenizações - Serviços / Peças Faltantes"
