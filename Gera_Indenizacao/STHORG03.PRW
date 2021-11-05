@@ -114,7 +114,7 @@ Static Function stEx003(xNroProjeto, xSeq, nOpc)
             if alltrim(FPG->FPG_XSERIE)$"DANFE/ND"
                 // IF FPG->FPG_XDEVCL=="1" .And. FPG->FPG_XSERIE$"DANFE/ND"
                 
-                MsgRun( "Aguarde, gerando documento de entrada..." ,, {|| lRet := u_STHORG04(xNroProjeto, xSeq) } )
+                // MsgRun( "Aguarde, gerando documento de entrada..." ,, {|| lRet := u_STHORG04(xNroProjeto, xSeq) } )
 
                 if alltrim(FPG->FPG_XSERIE)=="ND"
                     MsgRun( "Aguarde, gerando nota de debito, passo 1..." ,, {|| lRet := stEx003a( xNroProjeto,xSeq,3 ) } )

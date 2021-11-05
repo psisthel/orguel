@@ -204,9 +204,11 @@ User Function VALINEA()
         for nX := 1 to len(aCols)
             if aCols[nX][nPosQtRet] > 0
                 if aCols[nX][nPosVlInd]>0
-                    ntot_indenizacao += ( (aCols[nX][nPosQtEnv]-aCols[nX][nPosQtRet]) * aCols[nX][nPosVlInd] )
+                    // ntot_indenizacao += ( (aCols[nX][nPosQtEnv]-aCols[nX][nPosQtRet]) * aCols[nX][nPosVlInd] )
+                    ntot_indenizacao += ( aCols[nX][nPosQtRet] * aCols[nX][nPosVlInd] )
                 else
-                    ntot_indenizacao += ( (aCols[nX][nPosQtEnv]-aCols[nX][nPosQtRet]) * aCols[nX][nPosVlUni] )
+                    // ntot_indenizacao += ( (aCols[nX][nPosQtEnv]-aCols[nX][nPosQtRet]) * aCols[nX][nPosVlUni] )
+                    ntot_indenizacao += ( aCols[nX][nPosQtRet] * aCols[nX][nPosVlUni] )
                 endif
             endif
             ntot_desconto += aCols[nX][nPosVlDes]
@@ -295,41 +297,59 @@ Static Function _preencheZE1(pProject)
 
 			SB1->( MsSeek(xFilial("SB1")+(_cAlias01)->FPA_PRODUT) )
 
-            cQry := "SELECT FQ3_QTD"
+            cQry := "SELECT FQ3_PROJET,FQ3_PROD,SUM(FQ3_QTD) AS FQ3_QTD"
             cQry += "  FROM " + RetSQLName("FQ3")
             cQry += " WHERE FQ3_FILIAL ='" + xFilial("FQ3") + "'" 
             cQry += "   AND D_E_L_E_T_= ' '"
             cQry += "   AND FQ3_PROJET='" + pProject + "'"
             cQry += "   AND FQ3_PROD='" + (_cAlias01)->FPA_PRODUT + "'"
+            cQry += "   AND FQ3_NFREM<>''"
+            cQry += "   AND FQ3_NFRET=''"
+            cQry += " GROUP BY FQ3_PROJET,FQ3_PROD"
 
             dbUseArea(.T., 'TOPCONN', TCGenQry(,,cQry), _cAlias02, .F., .T.)
                         
-            If (_cAlias02)->( !Eof() )
+            nQtdEnviada := (_cAlias02)->FQ3_QTD
 
-                if ZE1->( dbSeek( xFilial("ZE1")+pProject+(_cAlias01)->FPA_PRODUT+(_cAlias01)->FPA_SEQGRU ))
-                    ZE1->(RecLock("ZE1",.f.))
-                else
-                    ZE1->(RecLock("ZE1",.t.))
-                endif
+            (_cAlias02)->( DBCloseArea() )
 
-                ZE1->ZE1_FILIAL	:= XFILIAL("ZE1")
-                ZE1->ZE1_PROJET	:= pProject
-                ZE1->ZE1_SEQ	:= (_cAlias01)->FPA_SEQGRU
-                ZE1->ZE1_PRODUT	:= (_cAlias01)->FPA_PRODUT
-                ZE1->ZE1_VALPRD	:= SB1->B1_PRV1
-                ZE1->ZE1_VLINDE	:= SB1->B1_PRV1
-                ZE1->ZE1_QTDENV	:= (_cAlias01)->FPA_QUANT
-                ZE1->ZE1_SALDO	:= (_cAlias02)->FQ3_QTD
-                // ZE1->ZE1_ACRESC	:= 0
-                // ZE1->ZE1_DESCON := 0
-                // ZE1->ZE1_QTDRET := 0
+            cQry := "SELECT FQ3_PROJET,FQ3_PROD,SUM(FQ3_QTD) AS FQ3_QTD"
+            cQry += "  FROM " + RetSQLName("FQ3")
+            cQry += " WHERE FQ3_FILIAL ='" + xFilial("FQ3") + "'" 
+            cQry += "   AND D_E_L_E_T_= ' '"
+            cQry += "   AND FQ3_PROJET='" + pProject + "'"
+            cQry += "   AND FQ3_PROD='" + (_cAlias01)->FPA_PRODUT + "'"
+            cQry += "   AND FQ3_NFREM=''"
+            cQry += "   AND FQ3_NFRET<>''"
+            cQry += " GROUP BY FQ3_PROJET,FQ3_PROD"
 
-                ZE1->(MsUnlock())
-            
+            dbUseArea(.T., 'TOPCONN', TCGenQry(,,cQry), _cAlias02, .F., .T.)
+                        
+            nQtdRetornada := (_cAlias02)->FQ3_QTD
+
+            (_cAlias02)->( DBCloseArea() )
+
+            if ZE1->( dbSeek( xFilial("ZE1")+pProject+(_cAlias01)->FPA_PRODUT+(_cAlias01)->FPA_SEQGRU ))
+                ZE1->(RecLock("ZE1",.f.))
+            else
+                ZE1->(RecLock("ZE1",.t.))
             endif
 
-            (_cAlias02)->(DBCloseArea())
+            ZE1->ZE1_FILIAL	:= XFILIAL("ZE1")
+            ZE1->ZE1_PROJET	:= pProject
+            ZE1->ZE1_SEQ	:= (_cAlias01)->FPA_SEQGRU
+            ZE1->ZE1_PRODUT	:= (_cAlias01)->FPA_PRODUT
+            ZE1->ZE1_VALPRD	:= SB1->B1_PRV1
+            ZE1->ZE1_VLINDE	:= SB1->B1_PRV1
+            ZE1->ZE1_QTDENV	:= nQtdEnviada
+            ZE1->ZE1_SALDO	:= (nQtdEnviada-nQtdRetornada)
+            ZE1->ZE1_QTDDEV := nQtdRetornada
+            // ZE1->ZE1_ACRESC	:= 0
+            // ZE1->ZE1_DESCON := 0
+            // ZE1->ZE1_QTDRET := 0
 
+            ZE1->(MsUnlock())
+            
 			(_cAlias01)->(dbSkip())
 		End
 
