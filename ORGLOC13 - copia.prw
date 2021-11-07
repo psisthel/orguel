@@ -75,11 +75,6 @@ If !Empty(cRetArq)
 	EndIf
 
 	Processa( {|| Importa(oGetDados) }, "Aguarde...", "Carregando arquivo de Tabela de Preço...",.F.)
-
-	// ----------------------------------------------------------------
-	// Executa rotina de atualização de dados de agrupamento de fatura
-	// ----------------------------------------------------------------
-	U_OGRTL003()	
 Else
 	MsgStop("Operação cancelada!")
 EndIf
@@ -233,11 +228,6 @@ While !FT_FEOF()
 	cLinha := FT_FREADLN()
 
 	aDados    := Str2Array(cLinha,";")
-	
-	If Empty(aDados[2])
-		aDados[2] := "0"
-	EndIf
-
 	aDados[2] := Val(StrTran(Alltrim(aDados[2]),',','.'))
 
 	nPosImp := aScan( aImport, { | x | AllTrim( x[1] ) == AllTrim(aDados[1]) } ) 
@@ -335,9 +325,6 @@ For nLinha := 1 To Len(aImport)
 				AutoGrLog( "Linha "+Alltrim(Str(nLinha))+ " Produto "+Alltrim(aImport[nLinha,1])+" Produto não Cadastrado, cadastre o produto ou use um produto já cadastrado." )
 				lValid := .F.
 			endif
-		else
-			AutoGrLog( "Linha "+Alltrim(Str(nLinha))+ " Produto não preenchido." )
-			lValid := .F.
 		endif
 
 		// A Terceira Coluna deve estar Preenchida e ser maio que zero
