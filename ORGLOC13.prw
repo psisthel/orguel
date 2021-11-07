@@ -420,6 +420,7 @@ Local nPosPUni 	:= aScan(oDlgPla:aHeader,{|x| AllTrim(x[2]) == "FPA_PRCUNI"} )
 Local nPosCond	:= aScan(oDlgPla:aHeader,{|x| AllTrim(x[2]) == "FPA_CONPAG"} )
 Local nPosFilR	:= aScan(oDlgPla:aHeader,{|x| AllTrim(x[2]) == "FPA_FILEMI"} )
 Local nPosVlBs	:= aScan(oDlgPla:aHeader,{|x| AllTrim(x[2]) == "FPA_VRHOR"} )
+Local nPosQtOri := aScan(oDlgPla:aHeader,{|x| AllTrim(x[2]) == "FPA_XQORIG"} )
 
  
 If aRegCom[nPosTpL][2] == "D"
@@ -544,6 +545,7 @@ For nX:=1 to Len(aImport)
 	if empty(oGetDados:aCols[nAtual][nPosFilR])
 		oGetDados:aCols[nAtual][nPosFilR] := xFilial("FPA")
 	endif
+	oGetDados:aCols[nAtual][nPosQtOri] := oGetDados:aCols[nAtual][nPOsQtd]
 
 Next nX
 
