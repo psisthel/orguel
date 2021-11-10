@@ -3,5 +3,6 @@
     "totvsLanguageServer.welcomePage": false,
     "advpl.environments": [],
     "advpl.selectedEnvironment": "Selecione o Ambiente",
-    "totvsLanguageServer.askCompileResult": false
+    "totvsLanguageServer.askCompileResult": false,
+    "svn.ignoreMissingSvnWarning": true
 }
